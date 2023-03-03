@@ -1,5 +1,5 @@
 import { TodosAccess } from './todosAcess'
-import { AttachmentUtils } from './attachmentUtils';
+import { AttachmentUtils } from './attachmentUtils'
 import { TodoItem } from '../models/TodoItem'
 import { CreateTodoRequest } from '../requests/CreateTodoRequest'
 import { UpdateTodoRequest } from '../requests/UpdateTodoRequest'
@@ -21,7 +21,7 @@ export async function createTodo(
   createTodoRequest: CreateTodoRequest,
   userId: string
 ): Promise<TodoItem> {
-  const todoId = uuid.v4();
+  const todoId = uuid.v4()
   const attachmentUrl = attachmentUtils.getAttachmentUrl(todoId)
 
   const newTodo: TodoItem = {
@@ -54,7 +54,7 @@ export async function deleteTodo(
   await todosAccess.deleteTodoItem(todoId, userId)
 }
 
-export async function generateUploadUrl(
+export async function generatePresignedUrl(
   todoId: string,
   userId: string
 ): Promise<string> {
@@ -63,13 +63,14 @@ export async function generateUploadUrl(
   if (!todo) {
     throw new createError.NotFound(`Todo with id ${todoId} not found`)
   } else if (todo.userId !== userId) {
-    throw new createError.Unauthorized(`User ${userId} is not authorized to access todo ${todoId}`)
+    throw new createError.Unauthorized(
+      `User ${userId} is not authorized to access todo ${todoId}`
+    )
   } else if (todo.attachmentUrl) {
     throw new createError.BadRequest(`Todo ${todoId} already has an attachment`)
   } else {
     logger.info('Todo exists and has no attachment', { todoId })
   }
-
 
   return await attachmentUtils.getUploadUrl(todoId)
 }
